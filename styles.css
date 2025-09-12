@@ -44,8 +44,8 @@
   }
   
   .profile-avatar {
-      width: 80px;
-      height: 80px;
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
       background: var(--gradient);
       display: flex;
@@ -60,16 +60,18 @@
   }
   
   .profile-image {
-      width: 100%;
-      height: 100%;
+      width: 90%;
+      height: 80%;
       object-fit: cover;
-      object-position: center;
+      object-position: 00% 90%;
       border-radius: 50%;
       transition: transform 0.3s ease;
+      transform: scale(1.2);
   }
   
+  
   .profile-avatar:hover .profile-image {
-      transform: scale(1.05);
+      transform: scale(1.2);
   }
   
   .profile-info h1 {
@@ -283,8 +285,8 @@
       }
       
       .profile-avatar {
-          width: 60px;
-          height: 60px;
+          width: 72px;
+          height: 72px;
           font-size: 28px;
       }
       

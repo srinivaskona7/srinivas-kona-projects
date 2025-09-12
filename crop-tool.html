@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Profile Image Crop Coordinate Selector</title>
+<style>
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    margin: 20px;
+    background: #fafafa;
+  }
+  .container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border-radius: 12px;
+  }
+  h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  input[type=file] {
+    margin-bottom: 20px;
+    width: 100%;
+    padding: 10px;
+    border: 2px dashed #6366f1;
+    border-radius: 8px;
+    background: #f8f9ff;
+  }
+  #image-wrapper {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    background: #eee;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #6366f1;
+  }
+  #uploaded-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    user-select: none;
+  }
+  #crop-box {
+    position: absolute;
+    border: 2px dashed #ff4757;
+    cursor: move;
+    background: rgba(255,71,87,0.2);
+    resize: both;
+    overflow: auto;
+    width: 120px;
+    height: 120px;
+    top: 25%;
+    left: 25%;
+    box-sizing: border-box;
+    border-radius: 50%;
+  }
+  #crop-box::after {
+    content: "Drag & Resize";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    color: #ff4757;
+    font-weight: bold;
+    pointer-events: none;
+  }
+  #coords {
+    margin-top: 20px;
+    font-family: 'Courier New', monospace;
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #6366f1;
+  }
+  #coords strong {
+    color: #6366f1;
+  }
+  #css-output {
+    margin-top: 15px;
+    font-family: 'Courier New', monospace;
+    background: #2d3748;
+    color: #68d391;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    white-space: pre-wrap;
+  }
+  button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+    transition: transform 0.2s;
+  }
+  button:hover {
+    transform: translateY(-2px);
+  }
+  button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .instruction {
+    background: #e3f2fd;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #2196f3;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>🖼️ Profile Image Crop Tool</h2>
+  
+  <div class="instruction">
+    <strong>Instructions:</strong><br>
+    1. Upload your profile image<br>
+    2. Drag the red circle to position the crop area<br>
+    3. Resize the circle by dragging the corner<br>
+    4. Copy the generated CSS code below
+  </div>
+
+  <input type="file" id="upload" accept="image/*" />
+  
+  <div id="image-wrapper">
+    <img id="uploaded-image" src="" alt="Upload an image" />
+    <div id="crop-box"></div>
+  </div>
+  
+  <div id="coords">
+    <strong>Coordinates:</strong> <span id="coord-values">Upload an image to start</span>
+  </div>
+  
+  <div id="css-output">object-position: 50% 50%; /* Upload image first */</div>
+  
+  <button id="copy-button" disabled>📋 Copy CSS Code</button>
+</div>
+
+<script>
+const uploadInput = document.getElementById('upload');
+const uploadedImage = document.getElementById('uploaded-image');
+const cropBox = document.getElementById('crop-box');
+const coordValues = document.getElementById('coord-values');
+const cssOutput = document.getElementById('css-output');
+const copyButton = document.getElementById('copy-button');
+
+// When an image is uploaded
+uploadInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const url = URL.createObjectURL(file);
+  uploadedImage.src = url;
+  copyButton.disabled = false;
+  resetCropBox();
+  
+  uploadedImage.onload = () => {
+    updateCoords();
+  };
+});
+
+function resetCropBox() {
+  cropBox.style.width = '120px';
+  cropBox.style.height = '120px';
+  cropBox.style.top = '25%';
+  cropBox.style.left = '25%';
+}
+
+// Calculate and update coordinates
+function updateCoords() {
+  const wrapperRect = document.getElementById('image-wrapper').getBoundingClientRect();
+  const cropRect = cropBox.getBoundingClientRect();
+
+  // Calculate center position of crop box relative to image
+  const centerX = ((cropRect.left + cropRect.width/2 - wrapperRect.left) / wrapperRect.width);
+  const centerY = ((cropRect.top + cropRect.height/2 - wrapperRect.top) / wrapperRect.height);
+  
+  // Convert to percentage
+  const xPercent = Math.round(centerX * 100);
+  const yPercent = Math.round(centerY * 100);
+  
+  coordValues.textContent = `X: ${xPercent}%, Y: ${yPercent}%`;
+  
+  // Generate CSS
+  const cssCode = `object-position: ${xPercent}% ${yPercent}%;`;
+  cssOutput.textContent = cssCode;
+}
+
+// Drag functionality
+let dragging = false;
+let dragStartX, dragStartY, boxStartX, boxStartY;
+
+cropBox.addEventListener('mousedown', (e) => {
+  dragging = true;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  const rect = cropBox.getBoundingClientRect();
+  boxStartX = rect.left;
+  boxStartY = rect.top;
+  e.preventDefault();
+});
+
+window.addEventListener('mouseup', () => {
+  dragging = false;
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!dragging) return;
+  
+  const wrapper = document.getElementById('image-wrapper');
+  const wrapperRect = wrapper.getBoundingClientRect();
+  
+  let newLeft = boxStartX + (e.clientX - dragStartX);
+  let newTop = boxStartY + (e.clientY - dragStartY);
+
+  // Boundary constraints
+  const minLeft = wrapperRect.left;
+  const minTop = wrapperRect.top;
+  const maxLeft = wrapperRect.right - cropBox.offsetWidth;
+  const maxTop = wrapperRect.bottom - cropBox.offsetHeight;
+
+  newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+  newTop = Math.max(minTop, Math.min(newTop, maxTop));
+
+  cropBox.style.left = (newLeft - wrapperRect.left) + 'px';
+  cropBox.style.top = (newTop - wrapperRect.top) + 'px';
+  
+  updateCoords();
+});
+
+// Resize observer
+const resizeObserver = new ResizeObserver(() => {
+  updateCoords();
+});
+resizeObserver.observe(cropBox);
+
+// Copy CSS to clipboard
+copyButton.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(cssOutput.textContent);
+    copyButton.textContent = '✅ Copied!';
+    setTimeout(() => {
+      copyButton.textContent = '📋 Copy CSS Code';
+    }, 2000);
+  } catch (err) {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = cssOutput.textContent;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    
+    copyButton.textContent = '✅ Copied!';
+    setTimeout(() => {
+      copyButton.textContent = '📋 Copy CSS Code';
+    }, 2000);
+  }
+});
+</script>
+</body>
+</html>
