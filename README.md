@@ -2,7 +2,7 @@
 
 # Srinivas Kona — Projects Portfolio
 
-**A static showcase hub linking to seven live GitHub Pages projects.**
+**A static showcase hub linking to live GitHub Pages projects and curated developer tools.**
 
 [![Live Site](https://img.shields.io/badge/Live-srinivaskona7.github.io-6366f1?style=for-the-badge)](https://srinivaskona7.github.io/srinivas-kona-projects/)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Srinivas%20Kona-0a66c2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/srinivas-kona/)
@@ -41,6 +41,7 @@ Each card on the homepage opens one of the live apps below in a new tab.
 | 5 | [**Glucose Tracker**](https://github.com/srinivaskona7/gulcose-cal) | Multi-profile blood-sugar monitor | localStorage · Calendar · Charts | [Open](https://srinivaskona7.github.io/gulcose-cal/) | [Repo](https://github.com/srinivaskona7/gulcose-cal) |
 | 6 | [**InstaLink**](https://github.com/srinivaskona7/instalink) | Instagram Reel link trimmer for clean sharing | URL parsing · Clipboard API | [Open](https://srinivaskona7.github.io/instalink/) | [Repo](https://github.com/srinivaskona7/instalink) |
 | 7 | [**Images to PDF Pro**](https://github.com/srinivaskona7/images-to-pdf) | Premium image → PDF converter with watermarks & filters | jsPDF · Canvas API | [Open](https://srinivaskona7.github.io/images-to-pdf/) | [Repo](https://github.com/srinivaskona7/images-to-pdf) |
+| 8 | [**DevKit – Developer Tools**](https://devkit.escalixstudio.com/) | _Curated_ — 106 client-side dev tools (format, encode, convert, AI, Web3) | Client-side · 8 Categories · Free | [Open](https://devkit.escalixstudio.com/) | _External_ |
 
 > All seven projects are independent repositories under [`@srinivaskona7`](https://github.com/srinivaskona7) and deploy automatically via GitHub Pages from their `main` branch.
 

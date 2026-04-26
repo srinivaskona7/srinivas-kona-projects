@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f23"/>
+      <stop offset="45%" stop-color="#4338ca"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="28%" cy="22%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="slash" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <rect width="64" height="64" rx="15" fill="url(#glow)"/>
+
+  <path d="M56 5 L8 53" stroke="url(#slash)" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+
+  <g fill="#ffffff">
+    <path d="M27 17
+             L17 17
+             Q11 17 11 23
+             Q11 29 17 29
+             L23 29
+             Q26 29 26 32
+             Q26 35 23 35
+             L11 35
+             L11 41
+             L23 41
+             Q32 41 32 32
+             Q32 23 23 23
+             L17 23
+             Q17 21 19 21
+             L27 21 Z"/>
+    <path d="M36 17
+             L42 17
+             L42 27
+             L51 17
+             L58 17
+             L48 28
+             L58 41
+             L51 41
+             L42 30
+             L42 41
+             L36 41 Z"/>
+  </g>
+
+  <circle cx="32" cy="51" r="1.5" fill="#fbbf24" opacity="0.9"/>
+</svg>
