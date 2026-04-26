@@ -134,7 +134,7 @@ Open it directly in a browser — no server required.
 
 | Channel | Link |
 |---------|------|
-| Email | [srinivaskonaofficial@gmail.com](mailto:srinivaskonaofficial@gmail.com) |
+| Email | [konasrinivas787@gmail.com](mailto:konasrinivas787@gmail.com) |
 | LinkedIn | [linkedin.com/in/srinivas-kona](https://www.linkedin.com/in/srinivas-kona/) |
 | GitHub | [github.com/srinivaskona7](https://github.com/srinivaskona7) |
 
