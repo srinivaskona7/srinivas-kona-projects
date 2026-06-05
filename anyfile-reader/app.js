@@ -647,8 +647,14 @@ class EBookReader {
             if (typeof saved.lineHeight === "number") this.lineHeight = saved.lineHeight;
             if (['narrow', 'medium', 'wide'].includes(saved.margin)) this.margin = saved.margin;
             this._savedFontFamily = saved.fontFamily || null;
+            if (typeof saved.splitView === "boolean") {
+                this.splitView = saved.splitView;
+            } else {
+                this.splitView = window.innerWidth >= 768;
+            }
         } catch (e) {
             console.warn("Could not parse saved settings", e);
+            this.splitView = window.innerWidth >= 768;
         }
     }
 
@@ -658,7 +664,8 @@ class EBookReader {
             fontSize: this.fontSize,
             lineHeight: this.lineHeight,
             margin: this.margin,
-            fontFamily: document.getElementById("font-family-select")?.value
+            fontFamily: document.getElementById("font-family-select")?.value,
+            splitView: this.splitView
         };
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
     }
@@ -1332,11 +1339,11 @@ function applyHighlight(range, color) {
         this.customViewer.style.display = "none";
         this.customContent.innerHTML = "";
         
-        // Clear layout adjustments
+        // Set layout based on screen size and persisted preferences
         const isDesktop = window.innerWidth >= 768;
-        this.splitView = isDesktop;
-        this.viewerContainer.className = `viewer-container ${isDesktop ? 'split-layout' : 'single-layout'}`;
-        this.splitViewBtn.classList.toggle("active", this.splitView);
+        const useSplit = isDesktop && this.splitView;
+        this.viewerContainer.className = `viewer-container ${useSplit ? 'split-layout' : 'single-layout'}`;
+        this.splitViewBtn.classList.toggle("active", useSplit);
         
         // Start Analytics timer
         this.startTimer();
@@ -1430,11 +1437,13 @@ function applyHighlight(range, color) {
         this.epubViewer.style.display = "block";
 
         this.epubBook = ePub(arrayBuffer);
+        const isDesktop = window.innerWidth >= 768;
+        const useSplit = isDesktop && this.splitView;
         this.epubRendition = this.epubBook.renderTo("epub-viewer", {
             width: "100%",
             height: "100%",
             flow: "paginated",          // Kindle-style page turns (columns), not a long scroll
-            spread: this.splitView ? "always" : "none",             // two-column vs single page
+            spread: useSplit ? "always" : "none",             // two-column vs single page
             manager: "default",
             allowScriptedContent: false // never run scripts embedded in a book
         });
@@ -2032,16 +2041,20 @@ function applyHighlight(range, color) {
     
     toggleSplitView() {
         this.splitView = !this.splitView;
-        this.splitViewBtn.classList.toggle("active", this.splitView);
+        this.saveSettings();
+        
+        const isDesktop = window.innerWidth >= 768;
+        const useSplit = isDesktop && this.splitView;
+        this.splitViewBtn.classList.toggle("active", useSplit);
         
         if (this.currentBook.format === 'epub' && this.epubRendition) {
-            this.epubRendition.spread(this.splitView ? "always" : "none");
+            this.epubRendition.spread(useSplit ? "always" : "none");
             if (this.epubRendition.manager) {
                 this.epubRendition.resize();
             }
         } else {
             // For MOBI or TXT formatting
-            this.viewerContainer.classList.toggle("split-layout", this.splitView);
+            this.viewerContainer.classList.toggle("split-layout", useSplit);
             this.applyCustomStyles();
         }
     }
