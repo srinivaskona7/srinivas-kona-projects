@@ -1,0 +1,17 @@
+{
+  "name": "anyfile-reader",
+  "version": "1.0.0",
+  "description": "Premium in-browser e-book reader supporting PDF, EPUB, MOBI, and TXT files with O'Reilly-inspired typography.",
+  "main": "app.js",
+  "scripts": {
+    "start": "npx -y http-server -p 8080",
+    "test": "node smoke-test.mjs",
+    "check": "node --check app.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "author": "AnyReader Team",
+  "license": "MIT"
+}

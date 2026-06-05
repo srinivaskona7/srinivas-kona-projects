@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnyReader — Premium Digital Book Reader</title>
+    <meta name="description" content="Read EPUB, PDF, Kindle MOBI, and Text files directly in your browser with high-fidelity typography, split-pane view, and O'Reilly styled interfaces.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400..500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PDF.js Styles (for text layer rendering) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
+    
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-black landing-active">
+    <!-- Background glow elements for premium dark/glassmorphic aesthetics -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- ============================================================
+         OPENING / LANDING VIEW — "Nocturne Library"
+         ============================================================ -->
+    <div id="landing-view" class="app-view active" aria-label="Welcome to AnyReader">
+        <!-- Atmosphere layers (decorative) -->
+        <div class="noc-lightshaft" aria-hidden="true"></div>
+        <div class="noc-grain" aria-hidden="true"></div>
+        <div class="noc-gilt" aria-hidden="true"></div>
+        <div class="noc-divider" aria-hidden="true"></div>
+        <span class="noc-marginalia" aria-hidden="true">// no account · no upload · no server</span>
+
+        <div class="noc-stage">
+            <div class="noc-watermark" aria-hidden="true">An</div>
+
+            <section class="noc-copy">
+                <p class="noc-eyebrow">A reading room of your own</p>
+                <h1 class="noc-headline">Read in the <em>quiet</em>.</h1>
+                <p class="noc-lede">
+                    AnyReader is a private library that lives entirely inside your browser.
+                    Open an EPUB, PDF, Kindle file, or plain text and it stays here — read,
+                    highlighted, and remembered, with nothing ever sent anywhere.
+                </p>
+
+                <div class="noc-ctas">
+                    <button id="enter-library-btn" class="noc-cta-primary">
+                        Enter the library <span class="chev" aria-hidden="true">›</span>
+                    </button>
+                    <button id="landing-sample-btn" class="noc-cta-ghost">
+                        Open a sample book
+                    </button>
+                </div>
+
+                <p class="noc-privacy">Your books never leave this browser.</p>
+                <p class="noc-telemetry">// 0 bytes uploaded · everything stays in this browser</p>
+
+                <ul class="noc-tickets" aria-label="Supported formats">
+                    <li>EPUB</li><li>PDF</li><li>MOBI</li><li>TXT</li><li>MD</li>
+                </ul>
+            </section>
+
+            <!-- Procedural leaning book-spine stack (JS-filled) -->
+            <div class="noc-shelf" id="noc-shelf" aria-hidden="true"></div>
+
+            <!-- Feature staircase (asymmetric, cascading) -->
+            <ul class="noc-features" aria-label="Why AnyReader">
+                <li class="f1"><span>Fully offline</span><small>Once it loads, it works with no connection — on a plane, off the grid, forever.</small></li>
+                <li class="f2"><span>Private by design</span><small>No tracking, no telemetry, no cloud. Your notes are yours alone.</small></li>
+                <li class="f3"><span>No account</span><small>Nothing to sign up for. Drop in a file and start reading.</small></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD VIEW -->
+    <div id="dashboard-view" class="app-view">
+        <header class="dashboard-header">
+            <div class="brand" id="brand-home" title="About AnyReader">
+                <span class="logo-icon"><i class="fa-solid fa-book-open-reader"></i></span>
+                <h1>AnyReader</h1>
+            </div>
+            <div class="stats-banner">
+                <div class="stat-item" id="stat-streak">
+                    <span class="stat-icon"><i class="fa-solid fa-fire"></i></span>
+                    <div class="stat-info">
+                        <span class="stat-value">1</span>
+                        <span class="stat-label">Day Streak</span>
+                    </div>
+                </div>
+                <div class="stat-item" id="stat-time">
+                    <span class="stat-icon"><i class="fa-regular fa-clock"></i></span>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stats-time-display">0 min</span>
+                        <span class="stat-label">Read Today</span>
+                    </div>
+                </div>
+                <div class="stat-item" id="stat-books">
+                    <span class="stat-icon"><i class="fa-solid fa-bookmark"></i></span>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stats-books-count">0</span>
+                        <span class="stat-label">Books Stored</span>
+                    </div>
+                </div>
+            </div>
+            <div class="global-actions">
+                <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <!-- Upload Panel -->
+            <section class="upload-section">
+                <div id="dropzone" class="upload-card">
+                    <input type="file" id="file-input" accept=".epub,.pdf,.mobi,.txt,.md" style="display: none;" multiple>
+                    <div class="upload-art">
+                        <i class="fa-solid fa-cloud-arrow-up cloud-icon"></i>
+                        <div class="pulse-ring"></div>
+                    </div>
+                    <h3>Drag & drop your books here</h3>
+                    <p class="upload-subtext">Supports DRM-free <strong>EPUB</strong>, <strong>PDF</strong>, <strong>MOBI</strong>, <strong>TXT</strong>, and <strong>MD</strong></p>
+                    <button class="btn btn-primary" id="upload-trigger-btn">
+                        <i class="fa-solid fa-folder-open"></i> Browse Files
+                    </button>
+                </div>
+            </section>
+
+            <!-- Book Shelf Section -->
+            <section class="shelf-section">
+                <div class="section-header">
+                    <h2>Your Book Shelf</h2>
+                    <div class="shelf-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="epub">EPUB</button>
+                        <button class="filter-btn" data-filter="pdf">PDF</button>
+                        <button class="filter-btn" data-filter="mobi">Kindle</button>
+                        <button class="filter-btn" data-filter="txt">Text</button>
+                    </div>
+                </div>
+                
+                <!-- Book Shelf Grid -->
+                <div class="shelf-grid" id="book-shelf-grid">
+                    <!-- Books dynamically populated here -->
+                    <div class="empty-shelf-state" id="empty-state">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        <p>No books added yet. Upload files above or load our sample book below!</p>
+                        <button class="btn btn-secondary" id="load-sample-btn">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Book
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="dashboard-footer">
+            <p>AnyReader &copy; 2026. Made with ❤️. Everything processed locally. Files never leave your browser.</p>
+        </footer>
+    </div>
+
+    <!-- INTEGRATED READER VIEW -->
+    <div id="reader-view" class="app-view">
+        <!-- Top Toolbar -->
+        <header class="reader-header">
+            <div class="reader-left">
+                <button id="close-reader-btn" class="icon-btn" title="Back to Shelf" aria-label="Back to Shelf">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="reader-meta">
+                    <span id="reader-book-title" class="book-title">Book Title</span>
+                    <span id="reader-book-author" class="book-author">Author</span>
+                </div>
+            </div>
+            
+            <div class="reader-center">
+                <!-- Navigation Display -->
+                <span id="reading-progress-text" class="progress-display">Loading...</span>
+            </div>
+
+            <div class="reader-right">
+                <button id="sidebar-toggle-btn" class="icon-btn" title="Sidebar (Table of Contents / Highlights)" aria-label="Table of Contents">
+                    <i class="fa-solid fa-list-ul"></i>
+                </button>
+                <button id="split-view-btn" class="icon-btn" title="Toggle Split (Two-Column) View" aria-label="Split View">
+                    <i class="fa-solid fa-book-open"></i>
+                </button>
+                <button id="style-panel-btn" class="icon-btn" title="Typography & Styles" aria-label="Font Settings">
+                    <i class="fa-solid fa-font"></i>
+                </button>
+                <button id="bookmark-toggle-btn" class="icon-btn" title="Bookmark Page" aria-label="Bookmark Page">
+                    <i class="fa-regular fa-bookmark"></i>
+                </button>
+                <button id="fullscreen-btn" class="icon-btn" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="reader-layout">
+            <!-- Sidebar Drawer -->
+            <aside id="reader-sidebar" class="reader-sidebar">
+                <div class="sidebar-tabs">
+                    <button class="sidebar-tab active" data-tab="toc" title="Table of Contents" aria-label="Table of Contents"><i class="fa-solid fa-list"></i></button>
+                    <button class="sidebar-tab" data-tab="bookmarks" title="Bookmarks" aria-label="Bookmarks"><i class="fa-solid fa-bookmark"></i></button>
+                    <button class="sidebar-tab" data-tab="notes" title="Notes & Highlights" aria-label="Notes and Highlights"><i class="fa-solid fa-highlighter"></i></button>
+                    <button class="sidebar-tab" data-tab="search" title="Search Book" aria-label="Search Book"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+                
+                <div class="sidebar-content-wrapper">
+                    <!-- Table of Contents -->
+                    <div class="sidebar-panel active" id="panel-toc">
+                        <h3>Table of Contents</h3>
+                        <ul id="toc-list" class="sidebar-list">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+
+                    <!-- Bookmarks -->
+                    <div class="sidebar-panel" id="panel-bookmarks">
+                        <h3>Saved Bookmarks</h3>
+                        <ul id="bookmarks-list" class="sidebar-list">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+
+                    <!-- Notes & Highlights -->
+                    <div class="sidebar-panel" id="panel-notes">
+                        <h3>Notes & Highlights</h3>
+                        <ul id="notes-list" class="sidebar-list">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+
+                    <!-- Search Panel -->
+                    <div class="sidebar-panel" id="panel-search">
+                        <h3>Search Inside Book</h3>
+                        <div class="search-box">
+                            <input type="text" id="inbook-search-input" placeholder="Type word or phrase..." aria-label="Search inside book">
+                            <button id="inbook-search-btn" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                        <ul id="search-results-list" class="sidebar-list search-results">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Reading Canvas Wrapper -->
+            <main id="reader-workspace" class="reader-workspace">
+                <!-- Floating arrows for page turning -->
+                <button id="prev-page-btn" class="nav-arrow left" aria-label="Previous Page">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                
+                <div id="viewer-container" class="viewer-container single-layout">
+                    <!-- Target rendering container for book content -->
+                    <div id="epub-viewer" class="viewer-engine" style="display: none;"></div>
+                    <div id="pdf-viewer" class="viewer-engine" style="display: none;"></div>
+                    <div id="custom-viewer" class="viewer-engine" style="display: none;">
+                        <div id="custom-content" class="custom-reader-content"></div>
+                    </div>
+                </div>
+
+                <button id="next-page-btn" class="nav-arrow right" aria-label="Next Page">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+
+                <!-- Toast Notification -->
+                <div id="reader-toast" class="toast" role="status" aria-live="polite">Action Saved</div>
+            </main>
+        </div>
+
+        <!-- Typography and Style Setting Modal/Popover -->
+        <div id="style-panel" class="style-panel-popover" role="dialog" aria-modal="false" aria-labelledby="style-panel-title">
+            <div class="style-panel-header">
+                <h4 id="style-panel-title">Reader Settings</h4>
+                <button id="close-style-panel" class="close-btn" aria-label="Close settings">&times;</button>
+            </div>
+            
+            <div class="style-panel-body">
+                <!-- Color Themes -->
+                <div class="setting-group">
+                    <label>Color Theme</label>
+                    <div class="theme-options">
+                        <button class="theme-opt theme-btn-oreilly" data-theme="oreilly" title="O'Reilly Classic">
+                            <span class="theme-swatch" style="background-color: #faf9f5; border: 1px solid #ddd;"></span>
+                            <span class="theme-name">O'Reilly</span>
+                        </button>
+                        <button class="theme-opt theme-btn-light" data-theme="light" title="Pure Light">
+                            <span class="theme-swatch" style="background-color: #ffffff; border: 1px solid #ddd;"></span>
+                            <span class="theme-name">Light</span>
+                        </button>
+                        <button class="theme-opt theme-btn-sepia" data-theme="sepia" title="Cozy Sepia">
+                            <span class="theme-swatch" style="background-color: #f4ecd8;"></span>
+                            <span class="theme-name">Sepia</span>
+                        </button>
+                        <button class="theme-opt theme-btn-dark" data-theme="dark" title="Carbon Dark">
+                            <span class="theme-swatch" style="background-color: #1a1a1a;"></span>
+                            <span class="theme-name">Dark</span>
+                        </button>
+                        <button class="theme-opt theme-btn-black active" data-theme="black" title="High Contrast">
+                            <span class="theme-swatch" style="background-color: #000000; border: 1px solid #444;"></span>
+                            <span class="theme-name">Amoled</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PDF Customization Warning -->
+                <div id="pdf-customization-note" class="pdf-customization-note" style="display: none;">
+                    <i class="fa-solid fa-circle-info"></i> Fixed-layout PDF: Color theme and zoom are adjustable. Font styles are fixed by the document.
+                </div>
+
+                <!-- Font Family -->
+                <div class="setting-group">
+                    <label>Typography</label>
+                    <div class="select-wrapper">
+                        <select id="font-family-select" aria-label="Font Family">
+                            <option value="Fraunces">Fraunces (Editorial Serif)</option>
+                            <option value="Georgia">Georgia (Serif)</option>
+                            <option value="Playfair Display">Playfair Display (Serif)</option>
+                            <option value="Inter">Inter (Sans)</option>
+                            <option value="system-ui">System UI (Sans)</option>
+                            <option value="Fira Code">Fira Code (Mono)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Font Size -->
+                <div class="setting-group">
+                    <div class="setting-row">
+                        <label>Text Size</label>
+                        <span id="font-size-val">100%</span>
+                    </div>
+                    <div class="size-controls">
+                        <button id="font-size-dec" class="btn btn-small"><i class="fa-solid fa-minus"></i></button>
+                        <button id="font-size-inc" class="btn btn-small"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <!-- Line Height -->
+                <div class="setting-group">
+                    <div class="setting-row">
+                        <label>Line Spacing</label>
+                        <span id="line-height-val">1.6</span>
+                    </div>
+                    <div class="line-controls">
+                        <button id="line-height-dec" class="btn btn-small" title="Decrease Spacing"><i class="fa-solid fa-align-justify"></i> Narrow</button>
+                        <button id="line-height-inc" class="btn btn-small" title="Increase Spacing"><i class="fa-solid fa-align-justify"></i> Loose</button>
+                    </div>
+                </div>
+
+                <!-- Margins / Max Page Width -->
+                <div class="setting-group">
+                    <label>Page Margins</label>
+                    <div class="margin-options">
+                        <button class="margin-btn active" data-margin="medium" title="Medium Margins">Standard</button>
+                        <button class="margin-btn" data-margin="narrow" title="Narrow Margins">Wide Text</button>
+                        <button class="margin-btn" data-margin="wide" title="Wide Margins">Slim Column</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Annotation Float Tooltip -->
+        <div id="selection-tooltip" class="selection-tooltip" role="toolbar" aria-label="Text selection actions">
+            <button class="hl-dot yellow" data-color="yellow" title="Yellow Highlight" aria-label="Highlight in yellow"></button>
+            <button class="hl-dot green" data-color="green" title="Green Highlight" aria-label="Highlight in green"></button>
+            <button class="hl-dot blue" data-color="blue" title="Blue Highlight" aria-label="Highlight in blue"></button>
+            <button class="hl-dot pink" data-color="pink" title="Pink Highlight" aria-label="Highlight in pink"></button>
+            <div class="tooltip-divider"></div>
+            <button id="tooltip-note-btn" class="tooltip-btn" title="Add Note"><i class="fa-solid fa-comment-medical"></i> Note</button>
+            <button id="tooltip-copy-btn" class="tooltip-btn" title="Copy Text"><i class="fa-solid fa-copy"></i> Copy</button>
+        </div>
+
+        <!-- Note Modal Dialog -->
+        <div id="note-modal" class="modal">
+            <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="note-modal-title">
+                <h3 id="note-modal-title">Add Annotation Note</h3>
+                <blockquote id="note-quote" class="note-quote">Selected quote text...</blockquote>
+                <textarea id="note-textarea" placeholder="Type your thoughts here..."></textarea>
+                <div class="modal-actions">
+                    <button id="close-note-modal-btn" class="btn btn-secondary">Cancel</button>
+                    <button id="save-note-btn" class="btn btn-primary">Save Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dependencies via CDNs -->
+    <!-- JSZip (Required for Epub.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- DOMPurify (sanitizes untrusted MOBI/EPUB HTML before rendering) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+
+    <!-- Epub.js -->
+    <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+    
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <!-- App Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>
