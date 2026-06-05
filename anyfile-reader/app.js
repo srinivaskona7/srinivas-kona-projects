@@ -588,6 +588,10 @@ class EBookReader {
         this.readSeconds = 0;
         this.timerInterval = null;
 
+        // Speech Synthesis (Text to Speech)
+        this.speechUtterance = null;
+        this.isSpeaking = false;
+
         this.initElements();
         this.applySettingsToControls();
         this.bindEvents();
@@ -714,6 +718,7 @@ class EBookReader {
         this.sidebarToggleBtn = document.getElementById("sidebar-toggle-btn");
         this.splitViewBtn = document.getElementById("split-view-btn");
         this.stylePanelBtn = document.getElementById("style-panel-btn");
+        this.ttsBtn = document.getElementById("tts-btn");
         this.bookmarkToggleBtn = document.getElementById("bookmark-toggle-btn");
         this.fullscreenBtn = document.getElementById("fullscreen-btn");
         
@@ -798,6 +803,7 @@ class EBookReader {
         this.splitViewBtn.addEventListener("click", () => this.toggleSplitView());
         this.stylePanelBtn.addEventListener("click", () => this.toggleStylePanel(true));
         this.closeStylePanel.addEventListener("click", () => this.toggleStylePanel(false));
+        this.ttsBtn.addEventListener("click", () => this.toggleTTS());
         this.bookmarkToggleBtn.addEventListener("click", () => this.toggleBookmark());
         this.fullscreenBtn.addEventListener("click", () => this.toggleFullscreen());
         
@@ -1398,6 +1404,7 @@ function applyHighlight(range, color) {
     }
     
     exitReader() {
+        if (this.isSpeaking) this.stopTTS();
         this.stopTimer();
         
         // Save final progress
@@ -2007,6 +2014,7 @@ function applyHighlight(range, color) {
     }
     
     prevPage() {
+        if (this.isSpeaking) this.stopTTS();
         if (this.currentBook.format === 'epub' && this.epubRendition) {
             this.epubRendition.prev();
         } else if (this.currentBook.format === 'pdf') {
@@ -2024,6 +2032,7 @@ function applyHighlight(range, color) {
     }
     
     nextPage() {
+        if (this.isSpeaking) this.stopTTS();
         if (this.currentBook.format === 'epub' && this.epubRendition) {
             this.epubRendition.next();
         } else if (this.currentBook.format === 'pdf') {
@@ -2728,6 +2737,108 @@ function applyHighlight(range, color) {
         const totalSecs = parseInt(localStorage.getItem("anyreader_time_today") || "0");
         const mins = Math.round(totalSecs / 60);
         document.getElementById("stats-time-display").innerText = mins === 0 ? "< 1 min" : `${mins} min`;
+    }
+
+    /* ==========================================================================
+       15. READ ALOUD (TEXT-TO-SPEECH) SYSTEM
+       ========================================================================== */
+    toggleTTS() {
+        if (!('speechSynthesis' in window)) {
+            this.showToast("Text-to-Speech not supported in this browser.");
+            return;
+        }
+
+        if (this.isSpeaking) {
+            this.stopTTS();
+        } else {
+            this.startTTS();
+        }
+    }
+
+    stopTTS() {
+        window.speechSynthesis.cancel();
+        this.isSpeaking = false;
+        if (this.ttsBtn) {
+            this.ttsBtn.innerHTML = `<i class="fa-solid fa-volume-high"></i>`;
+            this.ttsBtn.classList.remove("active");
+        }
+        this.showToast("Speech stopped");
+    }
+
+    startTTS() {
+        if (!this.currentBook) return;
+        let text = "";
+
+        const format = this.currentBook.format;
+        if (format === 'epub') {
+            const iframe = this.epubViewer.querySelector("iframe");
+            if (iframe && iframe.contentDocument && iframe.contentDocument.body) {
+                text = iframe.contentDocument.body.innerText;
+            }
+        } else if (format === 'pdf') {
+            const pageContainer = document.getElementById(`pdf-page-node-${this.pdfCurrentPage}`);
+            if (pageContainer) {
+                const textLayer = pageContainer.querySelector(".textLayer");
+                if (textLayer) {
+                    text = textLayer.innerText;
+                }
+            }
+        } else {
+            text = this.customContent.innerText;
+        }
+
+        text = text.replace(/\s+/g, ' ').trim();
+
+        if (!text || text.length < 5) {
+            this.showToast("No readable text found.");
+            return;
+        }
+
+        this.showToast("Reading aloud...");
+        this.isSpeaking = true;
+        if (this.ttsBtn) {
+            this.ttsBtn.innerHTML = `<i class="fa-solid fa-circle-stop" style="color: var(--reader-accent);"></i>`;
+            this.ttsBtn.classList.add("active");
+        }
+
+        const sentences = text.match(/[^.!?]+[.!?]+(\s|$)/g) || [text];
+        let currentSentenceIndex = 0;
+
+        const speakNext = () => {
+            if (!this.isSpeaking) return;
+            if (currentSentenceIndex >= sentences.length) {
+                this.stopTTS();
+                this.showToast("Finished reading");
+                return;
+            }
+
+            const sentenceText = sentences[currentSentenceIndex].trim();
+            if (!sentenceText) {
+                currentSentenceIndex++;
+                speakNext();
+                return;
+            }
+
+            this.speechUtterance = new SpeechSynthesisUtterance(sentenceText);
+            const voices = window.speechSynthesis.getVoices();
+            this.speechUtterance.voice = voices.find(v => v.lang.startsWith('en')) || voices[0] || null;
+
+            this.speechUtterance.onend = () => {
+                currentSentenceIndex++;
+                speakNext();
+            };
+
+            this.speechUtterance.onerror = (e) => {
+                if (e.error !== 'interrupted') {
+                    this.stopTTS();
+                }
+            };
+
+            window.speechSynthesis.speak(this.speechUtterance);
+        };
+
+        window.speechSynthesis.cancel();
+        speakNext();
     }
 }
 
