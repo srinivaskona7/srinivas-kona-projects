@@ -41,9 +41,11 @@ Each card on the homepage opens one of the live apps below in a new tab.
 | 5 | [**Glucose Tracker**](https://github.com/srinivaskona7/gulcose-cal) | Multi-profile blood-sugar monitor | localStorage · Calendar · Charts | [Open](https://srinivaskona7.github.io/gulcose-cal/) | [Repo](https://github.com/srinivaskona7/gulcose-cal) |
 | 6 | [**InstaLink**](https://github.com/srinivaskona7/instalink) | Instagram Reel link trimmer for clean sharing | URL parsing · Clipboard API | [Open](https://srinivaskona7.github.io/instalink/) | [Repo](https://github.com/srinivaskona7/instalink) |
 | 7 | [**Images to PDF Pro**](https://github.com/srinivaskona7/images-to-pdf) | Premium image → PDF converter with watermarks & filters | jsPDF · Canvas API | [Open](https://srinivaskona7.github.io/images-to-pdf/) | [Repo](https://github.com/srinivaskona7/images-to-pdf) |
-| 8 | [**DevKit – Developer Tools**](https://devkit.escalixstudio.com/) | _Curated_ — 106 client-side dev tools (format, encode, convert, AI, Web3) | Client-side · 8 Categories · Free | [Open](https://devkit.escalixstudio.com/) | _External_ |
+| 8 | [**AnyReader**](https://github.com/srinivaskona7/file-reader) | Premium client-side e-book reader (EPUB, PDF, MOBI, TXT) | epub.js · pdf.js · IndexedDB | [Open](https://srinivaskona7.github.io/file-reader/) | [Repo](https://github.com/srinivaskona7/file-reader) |
+| 9 | [**Book Info**](https://github.com/srinivaskona7/book-info) | Curated chapter-by-chapter book summaries, diagrams & takeaways | Editorial Reader · Mermaid · Multi-Theme | [Open](https://srinivaskona7.github.io/book-info/) | [Repo](https://github.com/srinivaskona7/book-info) |
+| 10 | [**DevKit – Developer Tools**](https://devkit.escalixstudio.com/) | _Curated_ — 106 client-side dev tools (format, encode, convert, AI, Web3) | Client-side · 8 Categories · Free | [Open](https://devkit.escalixstudio.com/) | _External_ |
 
-> All seven projects are independent repositories under [`@srinivaskona7`](https://github.com/srinivaskona7) and deploy automatically via GitHub Pages from their `main` branch.
+> All standalone projects are independent repositories under [`@srinivaskona7`](https://github.com/srinivaskona7) and deploy automatically via GitHub Pages from their `main` branch.
 
 ---
 
