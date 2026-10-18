@@ -27,6 +27,8 @@ If you propose a framework (React, Vue, Svelte, Vite, Next…), a bundler (Webpa
 | Project | [gulcose-cal](https://github.com/srinivaskona7/gulcose-cal) | <https://srinivaskona7.github.io/gulcose-cal/> |
 | Project | [instalink](https://github.com/srinivaskona7/instalink) | <https://srinivaskona7.github.io/instalink/> |
 | Project | [images-to-pdf](https://github.com/srinivaskona7/images-to-pdf) | <https://srinivaskona7.github.io/images-to-pdf/> |
+| Project | [file-reader](https://github.com/srinivaskona7/file-reader) | <https://srinivaskona7.github.io/file-reader/> |
+| Project | [book-info](https://github.com/srinivaskona7/book-info) | <https://srinivaskona7.github.io/book-info/> |
 
 The hub repo only references project repos by URL — there is no submodule, monorepo, or cross-import relationship.
 
@@ -82,29 +84,45 @@ Common conventions across the **project repos** (all linked apps):
 
 ---
 
-## 5. Adding a New Project to the Portfolio
+## 5. Adding a New Project to the Portfolio (Automated Protocol)
 
-When the user asks to "add project X," do this and only this:
+When given another repository path or URL and asked to "add this project/repo":
 
-1. Edit `index.html`. Inside `<div class="projects-grid" id="projectsGrid">`, append a new card following the established structure:
+### Step 1: Analyze the Candidate Project
+1. Open the candidate repository's `README.md`, `index.html`, and `package.json` (if any).
+2. Extract:
+   - **Display Title**: Concise, human-readable name (e.g., `Book Info`, `Images to PDF Pro`).
+   - **One-Line Value Proposition**: Core user benefit in ≤ 60 characters (e.g., `Curated chapter-by-chapter book summaries, diagrams & takeaways`).
+   - **Core Tech Tags**: 2–3 key libraries or concepts separated by `•` (e.g., `Editorial Reader • Mermaid • Multi-Theme`).
+   - **Font Awesome 6 Icon**: Match the domain (e.g., `fa-bookmark` for reading/books, `fa-file-pdf` for PDFs, `fa-chart-line` for finance).
+   - **Live GitHub Pages URL**: `https://srinivaskona7.github.io/<repo-name>/`. Verify it is live or configured to deploy.
 
-   ```html
-   <div class="project-card" data-url="https://srinivaskona7.github.io/<repo>/">
-     <div class="project-header">
-       <div class="project-icon"><i class="fas fa-<icon>"></i></div>
-       <div class="project-overlay"><i class="fas fa-external-link-alt"></i></div>
-     </div>
-     <div class="project-info">
-       <h3><Display Name></h3>
-       <p><One-line description></p>
-       <span class="project-tech"><tech1> • <tech2></span>
-     </div>
-   </div>
-   ```
+### Step 2: Update `index.html`
+Inside `<div class="projects-grid" id="projectsGrid">`, append the project card (before external curated links like `DevKit`):
+```html
+<div class="project-card" data-url="https://srinivaskona7.github.io/<repo>/">
+  <div class="project-header">
+    <div class="project-icon"><i class="fas fa-<icon>"></i></div>
+    <div class="project-overlay"><i class="fas fa-external-link-alt"></i></div>
+  </div>
+  <div class="project-info">
+    <h3><Display Name></h3>
+    <p><One-line description></p>
+    <span class="project-tech"><tech1> • <tech2></span>
+  </div>
+</div>
+```
 
-2. Pick a Font Awesome 6 icon name. If unsure, ask the user.
-3. **Do not modify** `script.js` or `styles.css` — the new card is auto-handled.
-4. Commit with the message format: `Add <Project Name> project to portfolio` (matches existing git history).
+### Step 3: Update Documentation & Memory
+1. Add an entry to the **Featured Projects** table in `README.md`.
+2. Add an entry to the **Repository Map** in `AGENTS.md` (§2).
+3. **Do not modify** `script.js` or `styles.css` — newly added cards are picked up automatically by event delegation.
+
+### Step 4: Verification & Git Commit
+1. Verify HTML syntax and closing tags.
+2. Commit message format: `Add <Project Name> project to portfolio`.
+3. Push to `origin main` when instructed.
+
 
 ---
 
