@@ -28,7 +28,7 @@ If you propose a framework (React, Vue, Svelte, Vite, Next…), a bundler (Webpa
 | Project | [instalink](https://github.com/srinivaskona7/instalink) | <https://srinivaskona7.github.io/instalink/> |
 | Project | [images-to-pdf](https://github.com/srinivaskona7/images-to-pdf) | <https://srinivaskona7.github.io/images-to-pdf/> |
 | Project | [file-reader](https://github.com/srinivaskona7/file-reader) | <https://srinivaskona7.github.io/file-reader/> |
-| Project | [book-info](https://github.com/srinivaskona7/book-info) | <https://srinivaskona7.github.io/book-info/> |
+| Project | [book-info](https://github.com/srinivaskona7/book-info) | <https://book-info.life-magic.workers.dev/> |
 
 The hub repo only references project repos by URL — there is no submodule, monorepo, or cross-import relationship.
 
